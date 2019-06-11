@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/holo_blue_bright"
+    android:layout_width="match_parent">
+
+    <TextView
+        android:id="@+id/thenumberlabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="The number:"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="48dp"
+        android:layout_marginTop="70dp"
+        android:textSize="48sp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/thenumberlabel"
+        android:layout_marginTop="150dp"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:layout_width="94dp"
+            android:layout_height="94dp"
+            android:text="-"
+            android:textSize="48sp"
+            android:onClick="decrement"/>
+
+        <TextView
+            android:id="@+id/number_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="48sp"
+            android:layout_marginLeft="48dp"
+            android:layout_marginRight="48dp"
+            android:text="0"/>
+
+        <Button
+            android:layout_width="94dp"
+            android:layout_height="94dp"
+            android:text="+"
+            android:textSize="48sp"
+            android:onClick="increment"/>
+    </LinearLayout>
+</RelativeLayout>
