@@ -17,29 +17,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         if (savedInstanceState != null) {
             number = savedInstanceState.getInt("number");
         }
-        TextView numberTextView = findViewById(R.id.number_text_view);
-        numberTextView.setText(String.format("%04d", number));
+        display(number);
     }
-
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        TextView numberTextView = findViewById(R.id.number_text_view);
-//        // Checks the orientation of the screen
-//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            setContentView(R.layout.activity_main_landscape);
-//            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
-//            numberTextView.setText(String.format("%04d", number));
-//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-//            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
-//            setContentView(R.layout.activity_main);
-//            numberTextView.setText(String.format("%04d", number));
-//        }
-//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outstate) {
@@ -58,8 +40,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void display(int number) {
         TextView numberTextView = findViewById(R.id.number_text_view);
-        numberTextView.setText(String.format("%04d", number));
+        if (number < 0) {
+            numberTextView.setText(String.format("%05d", number));
+        } else {
+            numberTextView.setText(String.format("%04d", number));
+        }
     }
+
 
     public void increment(View view) { display(++number); }
 
