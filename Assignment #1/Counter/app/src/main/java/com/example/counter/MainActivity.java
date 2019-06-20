@@ -1,13 +1,9 @@
 package com.example.counter;
 
-import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     private void display(int number) {
         TextView numberTextView = findViewById(R.id.number_text_view);
         if (number < 0) {
@@ -46,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
             numberTextView.setText(String.format("%04d", number));
         }
     }
-
 
     public void increment(View view) { display(++number); }
 
