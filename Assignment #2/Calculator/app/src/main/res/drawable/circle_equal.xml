@@ -6,8 +6,8 @@
     <stroke
         android:width="2dp" />
     <padding
-        android:bottom="15dp"
-        android:left="15dp"
-        android:right="15dp"
-        android:top="15dp" />
+        android:bottom="23dp"
+        android:left="23dp"
+        android:right="23dp"
+        android:top="23dp" />
 </shape>

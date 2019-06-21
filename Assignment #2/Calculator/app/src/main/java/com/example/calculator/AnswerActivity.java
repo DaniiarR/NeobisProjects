@@ -7,12 +7,19 @@ import android.widget.TextView;
 
 public class AnswerActivity extends AppCompatActivity {
 
+    double answer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer);
         Intent intent = getIntent();
-        setText(intent.getDoubleExtra("answer", 0));
+        answer = intent.getDoubleExtra("answer", 0);
+        setText(answer);
+        if (savedInstanceState != null) {
+            answer = savedInstanceState.getDouble("answer");
+            setText(answer);
+        }
     }
 
     private void setText(double answer) {
@@ -22,5 +29,11 @@ public class AnswerActivity extends AppCompatActivity {
         } else {
             answerTextView.setText(String.valueOf(answer));
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putDouble("answer", answer);
     }
 }
