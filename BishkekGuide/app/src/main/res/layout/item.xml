@@ -1,48 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:minHeight="88dp"
-    android:orientation="horizontal"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/place_photo"
-        android:layout_width="0dp"
-        android:layout_height="88dp"
-        android:layout_weight="1"
-        android:scaleType="centerCrop"
-        android:src="@drawable/manas"/>
-
-    <LinearLayout
-        android:layout_marginLeft="16dp"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/item_linear_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:minHeight="88dp"
+        android:orientation="horizontal"
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/place_name"
-            android:textColor="@android:color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Monument name"
-            android:layout_weight="1"
-            android:textStyle="bold"
-            android:paddingBottom="6dp"
-            android:gravity="bottom"/>
+        <ImageView
+            android:id="@+id/place_photo"
+            android:layout_width="130dp"
+            android:layout_height="88dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/manas" />
 
-        <TextView
-            android:id="@+id/place_district"
-            android:paddingTop="6dp"
-            android:layout_weight="1"
-            android:gravity="top"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:text="Monument district"/>
+            android:layout_marginLeft="16dp"
+            android:minHeight="88dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/place_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:paddingBottom="6dp"
+                android:text="Sample name"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/place_district"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:paddingTop="6dp"
+                android:text="Sample district name"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="22dp"
+            android:src="@drawable/unfold_icon" />
 
     </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/description_relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/info_imageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/info_icon"/>
+
+        <TextView
+            android:id="@+id/onClick_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/info_imageView"
+            android:lineSpacingExtra="6sp"
+            android:paddingLeft="16dp"
+            android:text="Sample description"
+            android:textSize="16sp"
+            android:visibility="visible"/>
+
+        <ImageView
+            android:id="@+id/location_imageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_below="@id/onClick_description"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/location_icon"/>
+
+        <TextView
+            android:id="@+id/onClick_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/onClick_description"
+            android:layout_toRightOf="@id/location_imageView"
+            android:paddingLeft="16dp"
+            android:paddingTop="22dp"
+            android:text="Sample location"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:visibility="visible"/>
+
+        <ImageView
+            android:id="@+id/call_imageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_below="@id/onClick_location"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/call_icon"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/call_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/onClick_location"
+            android:layout_toRightOf="@id/call_imageView"
+            android:paddingLeft="16dp"
+            android:paddingTop="22dp"
+            android:text="Sample number"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
+
 
 </LinearLayout>

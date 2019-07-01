@@ -13,7 +13,7 @@ public class PlaceFragmentsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -23,6 +23,8 @@ public class PlaceFragmentsPagerAdapter extends FragmentPagerAdapter {
                 return new MonumentsFragment();
             case 1:
                 return new ParksFragment();
+            case 2:
+                return new RestaurantsFragment();
             default:
                 return null;
         }
@@ -36,6 +38,8 @@ public class PlaceFragmentsPagerAdapter extends FragmentPagerAdapter {
                 return "Monuments";
             case 1:
                 return "Parks";
+            case 2:
+                return "Restaurants";
         }
         return null;
     }

@@ -8,23 +8,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MonumentsFragment extends Fragment {
+public class RestaurantsFragment extends Fragment {
 
-    //private boolean isOpen = false;
-
-    public MonumentsFragment() {
+    public RestaurantsFragment() {
         // Required empty public constructor
     }
 
@@ -32,30 +28,47 @@ public class MonumentsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //Put our listView inside a container (Linear Layout) and set it as the rootView for the Fragment
         final View rootView = inflater.inflate(R.layout.place_list_view, container, false);
 
         final ArrayList<Place> placesList = new ArrayList<>();
-        placesList.add(new Place("Manas's monument",
+        placesList.add(new Place("Frunze restaurant",
+                                "Okryabr",
+                         "Cuisine: Asian, European, Japanese, Eastern \nAverage fee: 1500 - 2000 soms \n" +
+                                        "Working time: 10:00 - 23:00 (M - S)",
+                               "Abdymomunova st. 220A / Erkindik blvd.",
+                                        R.drawable.frunze_restaurant,
+                        "42.879106,74.606954",
+                            "996551664466"));
+        placesList.add(new Place("Arzu restaurant",
+                                "Alamedin",
+                        "Cuisine: Asian, Eastern, European \nAverage fee: 600 - 800 soms \n" +
+                                        "Working time: 09:00 - 00:00 (M - S)",
+                                "Pobedy ave. 311",
+                                        R.drawable.arzu_restaurant,
+                        "42.878388,74.596515",
+                            "996558581876"));
+        placesList.add(new Place("Assorti Buhara",
                                 "Oktyabr",
-                         "The Epic of Manas is perhaps the most famous part of Kyrgyz culture, " +
-                "and is (arguably) the longest epic poem in the world. At 20 times longer than the Odyssey, this epic tells the life of Manas, an epic warrior, and his son and grandson. " +
-                "The original tale was passed orally from performer to performer, who were known as manaschi. The tale was written down starting in the 1800s, and the first complete version was published in the 1920s. " +
-                "The Epic of Manas has since been translated into many different languages, and published in the Soviet Union and abroad.",
-                              "Bishkek, Ala-Too Square",
-                                        R.drawable.manas,
-                       "42.876476,74.603726"));
-        placesList.add(new Place("Lenin's monument",
+                         "Cuisine: European, Kyrgyz, Korean, Japanese \nAverage fee: 400 - 600 soms \n" +
+                                        "Working time: 11:00 - 00:00 (M - S)",
+                                "Ibraimova st. 105 / Frunze st.",
+                                        R.drawable.assorti_buhara,
+                        "42.884861,74.616611",
+                           "996555300200"));
+        placesList.add(new Place("Obama Bar & Grill",
                                 "Oktyabr",
-                         "Vladimir Lenin, also called Vladimir Ilich Lenin, original name Vladimir Ilich Ulyanov, (born April 10 [April 22, New Style], 1870, Simbirsk, Russia—died January 21, 1924, Gorki [later Gorki Leninskiye], near Moscow), " +
-                "founder of the Russian Communist Party (Bolsheviks), inspirer and leader of the Bolshevik Revolution (1917), and the architect, builder, and first head (1917–24) of the Soviet state. He was the founder of the organization known as Comintern (Communist International) and the posthumous source of “Leninism,” " +
-                "the doctrine codified and conjoined with Karl Marx’s works by Lenin’s successors to form Marxism-Leninism, which became the Communist worldview.",
-                              "Bishkek, Former AUCA building",
-                                       R.drawable.lenin,
-                "42.878630,74.603869"));
+                         "Cuisine: American, Mexican \nAverage fee: 400 - 600 soms \n" +
+                                        "Working time: 11:00 - 00:00 (M - S)",
+                                "Toktogula st. 93 / Tynystanova",
+                                         R.drawable.obama_restaurant,
+                        "42.872155,74.607655",
+                           "996778685002"));
+
+
         PlaceAdapter adapter = new PlaceAdapter(getActivity(), placesList);
-        final ListView listView = rootView.findViewById(R.id.list);
+        ListView listView = rootView.findViewById(R.id.list);
         listView.setAdapter(adapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -63,10 +76,11 @@ public class MonumentsFragment extends Fragment {
                 TextView descriptionTextView = view.findViewById(R.id.place_district);
                 TextView nameTextView = view.findViewById(R.id.place_name);
                 RelativeLayout descriptionLayout = view.findViewById(R.id.description_relativeLayout);
+                ImageView callImageView = view.findViewById(R.id.call_imageView);
+                TextView callTextView = view.findViewById(R.id.call_textView);
+
                 if (place.isOpen) {
                     // make the description invisible
-//                    onClickDescription.setVisibility(View.GONE);
-//                    onClickLocation.setVisibility(View.GONE);
                     descriptionLayout.setVisibility(View.GONE);
                     // return the name text state to normal
                     nameTextView.setGravity(Gravity.BOTTOM);
@@ -84,9 +98,10 @@ public class MonumentsFragment extends Fragment {
                     nameTextView.setGravity(Gravity.CENTER);
                     nameTextView.setTextSize(24);
                     // make the actual description visible
-//                    onClickDescription.setVisibility(View.VISIBLE);
-//                    onClickLocation.setVisibility(View.VISIBLE);
                     descriptionLayout.setVisibility(View.VISIBLE);
+                    // make the phone number visible
+                    callImageView.setVisibility(View.VISIBLE);
+                    callTextView.setVisibility(View.VISIBLE);
 
                     place.isOpen = true;
                 }
@@ -94,4 +109,5 @@ public class MonumentsFragment extends Fragment {
         });
         return rootView;
     }
+
 }
