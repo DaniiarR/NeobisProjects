@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, BooksActivity.class);
         EditText editText = findViewById(R.id.editText);
         intent.putExtra("bookNameForSearch", editText.getText().toString());
-        //Log.i("MAIN ACTIVITY: ", editText.getText());
+        Log.i("MAIN ACTIVITY: ", editText.getText().toString());
         startActivity(intent);
     }
 }

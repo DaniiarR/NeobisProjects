@@ -103,6 +103,7 @@ public class Utils {
     public static ArrayList<Book> extractBooksFromJson(String json) {
         // If the JSON string is empty or null, then return early.
         if (TextUtils.isEmpty(json)) {
+            Log.e(LOG_TAG, "JSON file is empty.");
             return null;
         }
         // Create an empty ArrayList that we can start adding earthquakes to
@@ -125,11 +126,18 @@ public class Utils {
                 String publishedDate = volumeInfo.getString("publishedDate");
                 String description =  volumeInfo.getString("description");
                 int pages = volumeInfo.getInt("pageCount");
-                double averageRating = volumeInfo.getDouble("averageRating");
+                double averageRating = 0;
+                try {
+                    averageRating = volumeInfo.getDouble("averageRating");
+                } catch (Exception e) {
+                    Log.e("UTILS: ", "Could not get the rating");
+                }
                 String previewLink = volumeInfo.getString("previewLink");
                 JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
                 String thumbnail = imageLinks.getString("thumbnail");
-                books.add(new Book(title, authors, publishedDate, description, pages, thumbnail, averageRating, previewLink));
+                Book bookToAdd = new Book(title, authors, publishedDate, description, pages, thumbnail, averageRating, previewLink);
+                Log.i("Utils: ", bookToAdd.toString());
+                books.add(bookToAdd);
             }
 
         } catch (JSONException e) {

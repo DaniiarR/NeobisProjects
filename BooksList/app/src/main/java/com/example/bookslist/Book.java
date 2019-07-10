@@ -1,5 +1,9 @@
 package com.example.bookslist;
 
+import android.support.annotation.NonNull;
+
+import java.util.Arrays;
+
 public class Book {
 
     private String title;
@@ -53,5 +57,18 @@ public class Book {
 
     public String getPreviewLink() {
         return previewLink;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format("title: %s\n" +
+                "authors: %s\n" +
+                "publishedDate: %s\n" +
+                "pages: %d\n" +
+                "thumbnailUrl: %s\n" +
+                "averageRating: %f\n" +
+                "previewLink: %s",
+                getTitle(), Arrays.toString(getAuthors()), getPublishedDate(), getPages(), getThumbnailUrl(), getAverageRating(), getPreviewLink());
     }
 }
