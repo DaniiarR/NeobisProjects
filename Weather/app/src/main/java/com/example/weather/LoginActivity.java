@@ -2,6 +2,7 @@ package com.example.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,15 +32,36 @@ public class LoginActivity extends AppCompatActivity {
     public static final String LOG_TAG = LoginActivity.class.getName();
     public static final String REGIONS_URL = "http://dataservice.accuweather.com/locations/v1/regions?apikey=fZN3MX3gULInTIaPpzzzYZKFXcJgBORP";
     ArrayList<String> regionsList = new ArrayList<>();
-    ArrayList<String> countriesList;
+    ArrayList<String> countriesList = new ArrayList<>();
     ArrayList<String> citiesList;
-
+    private FusedLocationProviderClient fusedLocationClient;
+    double locationLatitude;
+    double locationLongtitude;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        try {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            System.out.println("Got the location. Will try to parse it.");
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                locationLatitude = location.getLatitude();
+                                locationLongtitude = location.getLongitude();
+                                Log.i(LOG_TAG, "latitude: " + locationLatitude + "," + "longtitude: " + locationLongtitude);
+                            }
+                        }
+                    });
+        } catch (SecurityException e) {
+            Log.e(LOG_TAG, "Permission denied. Can't get the location");
+        }
 
         final RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(makeRegionsArrayRequest(REGIONS_URL));
@@ -46,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
 
         final Spinner regionsSpinner = findViewById(R.id.spinner);
         regionsSpinner.setAdapter(regionsAdapter);
+        regionsSpinner.setSelection(1);
         regionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
