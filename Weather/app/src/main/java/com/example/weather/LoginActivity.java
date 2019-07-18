@@ -2,14 +2,21 @@ package com.example.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -37,6 +44,10 @@ public class LoginActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     double locationLatitude;
     double locationLongtitude;
+    Spinner regionsSpinner;
+    Spinner countriesSpinner;
+    String provider;
+
 
 
     @Override
@@ -44,79 +55,82 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        try {
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            System.out.println("Got the location. Will try to parse it.");
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                locationLatitude = location.getLatitude();
-                                locationLongtitude = location.getLongitude();
-                                Log.i(LOG_TAG, "latitude: " + locationLatitude + "," + "longtitude: " + locationLongtitude);
-                            }
-                        }
-                    });
-        } catch (SecurityException e) {
-            Log.e(LOG_TAG, "Permission denied. Can't get the location");
-        }
+        // add functionality to GPS button
+        ImageView locationImageView = findViewById(R.id.get_location);
+        locationImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "button is clicked", Toast.LENGTH_LONG).show();
+                LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+                boolean enabled = service
+                        .isProviderEnabled(LocationManager.GPS_PROVIDER);
+                // check if enabled and if not send user to the GSP settings
+                // Better solution would be to display a dialog and suggesting to
+                // go to the settings
+                if (!enabled) {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
+                }
+                Criteria criteria = new Criteria();
+                provider = service.getBestProvider(criteria, false);
+                try {
+                    Location location = service.getLastKnownLocation(provider);
+                } catch (SecurityException e ) {
+                    Toast.makeText(getApplicationContext(), "Permossion denied", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
+        // create new RequestQueue for Volley and add Regions JSON request
         final RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(makeRegionsArrayRequest(REGIONS_URL));
 
-        ArrayAdapter<String> regionsAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, regionsList);
-        regionsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        regionsSpinner = findViewById(R.id.spinner);
 
-        final Spinner regionsSpinner = findViewById(R.id.spinner);
-        regionsSpinner.setAdapter(regionsAdapter);
-        regionsSpinner.setSelection(1);
         regionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            int check = 0;
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.e(LOG_TAG, "Spinner1's onItemSelected method is being executed");
-
-                JsonArrayRequest request = null;
-                //switch (regionsSpinner.getSelectedItem().toString()) {
-                switch (regionsSpinner.getItemAtPosition(position).toString()) {
-                    case "Africa":
-                        request = makeCountriesArrayRequest("AFR");
-                        break;
-                    case "Antarctica":
-                        request = makeCountriesArrayRequest("ANT");
-                        break;
-                    case "Arctic":
-                        request = makeCountriesArrayRequest("ARC");
-                        break;
-                    case "Asia":
-                        request = makeCountriesArrayRequest("ASI");
-                        break;
-                    case "Central America":
-                        request = makeCountriesArrayRequest("CAC");
-                        break;
-                    case "Europe":
-                        request = makeCountriesArrayRequest("EUR");
-                        break;
-                    case "Middle East":
-                        request = makeCountriesArrayRequest("MEA");
-                        break;
-                    case "North America":
-                        request = makeCountriesArrayRequest("NAM");
-                        break;
-                    case "Oceania":
-                        request = makeCountriesArrayRequest("OCN");
-                        break;
-                    case "South America":
-                        request = makeCountriesArrayRequest("SAM");
-                        break;
+                if (++check > 1) {
+                    Log.e(LOG_TAG, "Spinner1's onItemSelected method is being executed");
+                    countriesList.clear();
+                    citiesList.clear();
+                    JsonArrayRequest request = null;
+                    //switch (regionsSpinner.getSelectedItem().toString()) {
+                    switch (regionsSpinner.getSelectedItem().toString()) {
+                        case "Africa":
+                            request = makeCountriesArrayRequest("AFR");
+                            break;
+                        case "Antarctica":
+                            request = makeCountriesArrayRequest("ANT");
+                            break;
+                        case "Arctic":
+                            request = makeCountriesArrayRequest("ARC");
+                            break;
+                        case "Asia":
+                            request = makeCountriesArrayRequest("ASI");
+                            break;
+                        case "Central America":
+                            request = makeCountriesArrayRequest("CAC");
+                            break;
+                        case "Europe":
+                            request = makeCountriesArrayRequest("EUR");
+                            break;
+                        case "Middle East":
+                            request = makeCountriesArrayRequest("MEA");
+                            break;
+                        case "North America":
+                            request = makeCountriesArrayRequest("NAM");
+                            break;
+                        case "Oceania":
+                            request = makeCountriesArrayRequest("OCN");
+                            break;
+                        case "South America":
+                            request = makeCountriesArrayRequest("SAM");
+                            break;
+                    }
+                    queue.add(request);
                 }
-                queue.add(request);
-
-                ArrayAdapter<String> countriesAdapter = new ArrayAdapter<String>(parent.getContext(), R.layout.spinner_item, countriesList);
-                countriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                Spinner countriesSpinner = findViewById(R.id.spinner2);
-                countriesSpinner.setAdapter(countriesAdapter);
             }
 
             @Override
@@ -134,6 +148,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(JSONArray response) {
                 Log.i(LOG_TAG, "Got the response, will try to parse it");
                 regionsList = parseRegionsJsonData(response);
+                ArrayAdapter<String> regionsAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, regionsList);
+                regionsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                regionsSpinner = findViewById(R.id.spinner);
+                regionsSpinner.setAdapter(regionsAdapter);
+
             }
         }, new Response.ErrorListener() {
 
@@ -154,6 +173,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(JSONArray response) {
                 Log.i(LOG_TAG, "Got the response, will try to parse it");
                 countriesList = parseCountriesJsonData(response);
+                ArrayAdapter<String> countriesAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, countriesList);
+                countriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                countriesSpinner = findViewById(R.id.spinner2);
+                countriesSpinner.setAdapter(countriesAdapter);
+                countriesAdapter.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -178,6 +202,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public ArrayList<String> parseCountriesJsonData(JSONArray countries) {
+        // Delete all the elements from citiesList
+        citiesList.clear();
+
         try {
             for (int i = 0; i < countries.length(); i++) {
                 JSONObject country = countries.getJSONObject(i);

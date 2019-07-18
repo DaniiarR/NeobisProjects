@@ -34,15 +34,19 @@ public class DayAdapter extends ArrayAdapter<Day> {
 
         Day currentDay = getItem(position);
 
+        // set city name
+        TextView cityNameTextView = listItemView.findViewById(R.id.textView8);
+        cityNameTextView.setText(MainActivity.cityName);
+
         // set current date
         TextView dateTextView = listItemView.findViewById(R.id.date_textView);
         dateTextView.setText(currentDay.getDate().substring(0, 10));
 
         // set sunrise and sunset time
         TextView sunriseTextView = listItemView.findViewById(R.id.sunrise_textView);
-        sunriseTextView.setText("Sunrise: " + currentDay.getSunRise().substring(12, 16));
+        sunriseTextView.setText("Sunrise: " + currentDay.getSunRise().substring(11, 16));
         TextView sunsetTextView = listItemView.findViewById(R.id.sunset_textView);
-        sunsetTextView.setText("Sunset: " + currentDay.getSunSet().substring(12, 16));
+        sunsetTextView.setText("Sunset: " + currentDay.getSunSet().substring(11, 16));
 
         // set image icons
         ImageView dayImage = listItemView.findViewById(R.id.day_image);
@@ -60,17 +64,17 @@ public class DayAdapter extends ArrayAdapter<Day> {
 
         // set rain probability
         TextView dayRainProbability = listItemView.findViewById(R.id.day_rain);
-        dayRainProbability.setText(String.valueOf(currentDay.getDayRainProbability()));
+        dayRainProbability.setText("Rain probability: " + currentDay.getDayRainProbability() + "%");
 
         TextView nightRainProbability = listItemView.findViewById(R.id.night_rain);
-        nightRainProbability.setText(String.valueOf(currentDay.getNightRainProbability()));
+        nightRainProbability.setText("Rain probability: " + currentDay.getNightRainProbability() + "%");
 
         // set wind speed and direction
         TextView dayWind = listItemView.findViewById(R.id.day_wind);
-        dayWind.setText(String.format("%f KM/H %s", currentDay.getDayWind(), currentDay.getDayWindDirection()));
+        dayWind.setText(String.format("Wind: %.1f KM/H %s", currentDay.getDayWind(), currentDay.getDayWindDirection()));
 
         TextView nightWind = listItemView.findViewById(R.id.night_wind);
-        nightWind.setText(String.format("%f KM/H %s", currentDay.getNightWind(), currentDay.getNightWindDirection()));
+        nightWind.setText(String.format("Wind: %.1f KM/H %s", currentDay.getNightWind(), currentDay.getNightWindDirection()));
 
         // set temperature
         TextView dayTemperature = listItemView.findViewById(R.id.day_temperature);
@@ -78,7 +82,6 @@ public class DayAdapter extends ArrayAdapter<Day> {
 
         TextView nightTemperature = listItemView.findViewById(R.id.night_temperature);
         nightTemperature.setText(currentDay.getMinTemperature() + "°C");
-
 
         return listItemView;
     }

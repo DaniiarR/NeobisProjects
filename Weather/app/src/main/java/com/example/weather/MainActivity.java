@@ -32,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = MainActivity.class.getName();
     public static final String TAG = "MyTag";
-    public final String WEATHER_URL = "http://dataservice.accuweather.com/forecasts/v1/daily/5day/222844?apikey=fZN3MX3gULInTIaPpzzzYZKFXcJgBORP&details=true&metric=true";
+    public String WEATHER_URL = "http://dataservice.accuweather.com/forecasts/v1/daily/5day/";
+    public static String cityName;
     public ArrayList<Day> daysList = new ArrayList<>();
     RequestQueue queue;
     JsonObjectRequest request;
@@ -41,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Intent intent = getIntent();
+        WEATHER_URL += intent.getStringExtra("cityKey") + "?apikey=fZN3MX3gULInTIaPpzzzYZKFXcJgBORP&details=true&metric=true";
+        cityName = intent.getStringExtra("cityName");
         ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -52,9 +55,7 @@ public class MainActivity extends AppCompatActivity {
         request = makeWeatherRequest(WEATHER_URL);
         request.setTag(TAG);
         queue.add(request);
-        ListView listView = findViewById(R.id.list);
-        DayAdapter adapter = new DayAdapter(this, daysList);
-        listView.setAdapter(adapter);
+
 //        } else {
 //            ProgressBar progressBar = (ProgressBar) findViewById(R.id.indeterminateBar);
 //            progressBar.setVisibility(View.GONE);
@@ -86,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
                 daysList = parseWeatherJsonData(response);
                 ProgressBar progressBar = (ProgressBar) findViewById(R.id.indeterminateBar);
                 progressBar.setVisibility(View.GONE);
+                ListView listView = findViewById(R.id.list);
+                DayAdapter adapter = new DayAdapter(getApplicationContext(), daysList);
+                listView.setAdapter(adapter);
             }
         }, new Response.ErrorListener() {
 
