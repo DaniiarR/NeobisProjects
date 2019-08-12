@@ -53,9 +53,14 @@ public class MainActivity extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(this);
         request = makeWeatherRequest(WEATHER_URL);
+        JsonObjectRequest tempRequest = new JsonObjectRequest(Request.Method.GET, WEATHER_URL, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        })
         request.setTag(TAG);
         queue.add(request);
-
 //        } else {
 //            ProgressBar progressBar = (ProgressBar) findViewById(R.id.indeterminateBar);
 //            progressBar.setVisibility(View.GONE);
