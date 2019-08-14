@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -16,5 +17,18 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="EditorTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/editorColorPrimary</item>
+        <item name="colorPrimaryDark">@color/editorColorPrimaryDark</item>
+        <item name="colorAccent">@color/editorColorAccent</item>
+        <item name="android:textColor">@color/textColorProduct</item>
+        <item name="android:textSize">@dimen/editorTextSize</item>
+    </style>
+
+    <style name="CategoryStyle">
+        <item name="android:textColor">@color/textColorProduct</item>
+        <item name="android:textSize">@dimen/editorTextSize</item>
+    </style>
 
 </resources>

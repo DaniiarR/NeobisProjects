@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Colors for the MainActivity -->
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <!-- Color of item name -->
+    <color name="textColorProduct">#2B3D4D</color>
+
+    <!-- Color of available item's text -->
+    <color name="textColorItemAvailable">#4CAF50</color>
+
+    <!-- Color of unavailable item's text -->
+    <color name="textColorItemUnavailable">#B71C1C</color>
+
+    <!-- Primary color for the EditorActivity -->
+    <color name="editorColorPrimary">#2196F3</color>
+
+    <!-- Dark primary color for the EditorActivity -->
+    <color name="editorColorPrimaryDark">#1976D2</color>
+
+    <!-- Accent color for the EditorActivity -->
+    <color name="editorColorAccent">#AA00FF</color>
 </resources>
