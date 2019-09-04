@@ -5,8 +5,10 @@ import android.net.Uri;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity
-public class Product {
+public class Product implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private int _id;
 
@@ -34,14 +36,6 @@ public class Product {
         this.imageUri = imageUri;
     }
 
-    public int getId() {
-        return _id;
-    }
-
-    public void setId(int _id) {
-        this._id = _id;
-    }
-
     public String getName() {
         return name;
     }
@@ -62,7 +56,20 @@ public class Product {
         return price;
     }
 
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
+
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s, %d, %f", getName(), getQuantity(), getPrice());
     }
 }

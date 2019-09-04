@@ -53,16 +53,10 @@
         android:id="@+id/sellButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:text="@string/action_sell"
         app:layout_constraintBottom_toBottomOf="@+id/productImageView"
-        app:layout_constraintTop_toTopOf="@+id/productImageView"
-        tools:layout_editor_absoluteX="276dp" />
-
-    <TextView
-        android:id="@+id/id_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:visibility="gone" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/productImageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

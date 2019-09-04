@@ -1,4 +1,4 @@
-package com.example.shopinventory;
+package com.example.shopinventory.data;
 
 import android.content.Context;
 import android.util.Log;
@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+
+import com.example.shopinventory.Product;
 
 @Database(entities = {Product.class}, version = 1)
 public abstract class ProductsDatabase extends RoomDatabase {
@@ -29,6 +31,7 @@ public abstract class ProductsDatabase extends RoomDatabase {
                     ProductsDatabase.class,
                     "productsDatabase")
                     .build();
+
         }
         return INSTANCE;
     }

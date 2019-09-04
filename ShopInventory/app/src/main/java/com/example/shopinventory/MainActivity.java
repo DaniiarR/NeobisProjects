@@ -1,10 +1,12 @@
 package com.example.shopinventory;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.example.shopinventory.data.ProductDao;
+import com.example.shopinventory.data.ProductsDatabase;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -12,8 +14,17 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private ProductAdapter adapter;
+    private ProductsDatabase database;
+    private ProductDao productDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        GetProductsFromDatabaseAsyncTask task = new GetProductsFromDatabaseAsyncTask();
+        task.execute();
     }
 
     @Override
@@ -52,5 +65,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class GetProductsFromDatabaseAsyncTask extends AsyncTask<Void, Void, List<Product>> {
+
+        @Override
+        protected List<Product> doInBackground(Void... voids) {
+            database = ProductsDatabase.getInMemoryDatabase(getApplicationContext());
+            productDao = database.productDao();
+
+            List<Product> products = productDao.getAllProducts();
+            adapter = new ProductAdapter(getApplicationContext(), products);
+
+            return products;
+        }
+
+        @Override
+        protected void onPostExecute(final List<Product> products) {
+            super.onPostExecute(products);
+
+            ListView listView = findViewById(R.id.list);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+                    intent.putExtra("product", products.get(i));
+
+                    startActivity(intent);
+                }
+            });
+        }
     }
 }

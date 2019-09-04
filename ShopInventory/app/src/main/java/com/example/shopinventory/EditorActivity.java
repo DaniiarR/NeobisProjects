@@ -5,19 +5,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NavUtils;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.media.Image;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -27,25 +29,39 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class EditorActivity extends AppCompatActivity {
+import com.example.shopinventory.data.ProductDao;
+import com.example.shopinventory.data.ProductsDatabase;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class EditorActivity extends AppCompatActivity {
+    /** Log tag for all the Log messages in this activity */
     public static final String LOG_TAG = EditorActivity.class.getSimpleName();
 
+    /** Our views declared as member variable for easier use in future */
     private ImageView productImageView;
     private EditText nameEditText;
     private EditText quantityEditText;
     private EditText priceEditText;
 
+    /** Every Product's fields. Will be used to create new Products and edit/delete them */
     public long mId;
     public String mName;
     public int mQuantity;
     public double mPrice;
+    String mCurrentPhotoPath;
 
+    /** Products database and DAO to access it's objects */
     public ProductsDatabase database;
     public ProductDao productDao;
 
+    /** Intent that might have called this activity */
     Intent intent = null;
 
+    /** Constants for permission */
     private final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0;
     private final int GALLERY_REQUEST_CODE = 1;
     private final int CAMERA_REQUEST_CODE = 2;
@@ -57,21 +73,24 @@ public class EditorActivity extends AppCompatActivity {
 
         database = ProductsDatabase.getInMemoryDatabase(this);
         productDao = database.productDao();
-
+        // Try/catch block for checking if this Activity was launched from MainActivity
+        // If so, set all views' texts to match clicked product's properties
         try {
             intent = getIntent();
-            getProductInfoFromIntent();
+            getProductInfoFromIntent((Product) intent.getSerializableExtra("product"));
             setViewsText();
         } catch (NullPointerException e) {
             Log.i(LOG_TAG, "No intent that has started this activity");
+            // if no intent launched this activity,
+            // set the intent variable to null because later in AsyncTask we want to know
+            // if we need to update a pet or to create a new one
             intent = null;
         }
-
+        // set onClickListener to the imageView to invoke AlertDialog with 2 options available: gallery and camera
         ImageView productImageView = findViewById(R.id.imageViewEditor);
         productImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(EditorActivity.this);
                 builder.setTitle(R.string.select_action)
                         .setItems(R.array.actions, new DialogInterface.OnClickListener() {
@@ -80,10 +99,8 @@ public class EditorActivity extends AppCompatActivity {
                                 switch (i) {
                                     case 0:
                                         requestGalleryPermission();
-                                        pickImageFromGallery();
                                         break;
                                     case 1:
-                                        //requestCameraPermission();
                                         dispatchTakePictureIntent();
                                         break;
                                 }
@@ -104,9 +121,6 @@ public class EditorActivity extends AppCompatActivity {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(EditorActivity.this,
                     Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
                 Toast.makeText(getApplicationContext(), "Give the app appropriate permissions in your phone settings", Toast.LENGTH_LONG).show();
             } else {
                 // No explanation needed; request the permission
@@ -117,16 +131,79 @@ public class EditorActivity extends AppCompatActivity {
             }
         }
     }
+
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+            }
         }
     }
 
 
-    private void requestCameraPermission() {
-        //TODO implement this method
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    /** Add current image to gallery */
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File file = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(file);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+
+    /** Crop the image that we got from camera for better performance and set it productImageView */
+    private void cropImage() {
+        productImageView = findViewById(R.id.imageViewEditor);
+        // Get the dimensions of the View
+        int targetW = productImageView.getWidth();
+        int targetH = productImageView.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        productImageView.setImageBitmap(bitmap);
     }
 
     @Override
@@ -136,13 +213,12 @@ public class EditorActivity extends AppCompatActivity {
             switch (requestCode) {
                 case GALLERY_REQUEST_CODE:
                     Uri selectedImageUri = data.getData();
-                    productImageView.setImageURI(selectedImageUri);
+                    mCurrentPhotoPath = selectedImageUri.toString();
+                    cropImage();
                     break;
                 case CAMERA_REQUEST_CODE:
-                    Bundle extras = data.getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    productImageView.setImageBitmap(imageBitmap);
-
+                    cropImage();
+                    break;
             }
         }
     }
@@ -159,6 +235,7 @@ public class EditorActivity extends AppCompatActivity {
         }
     }
 
+    /** Method to launch an intent to choose a picture from gallery */
     private void pickImageFromGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
@@ -167,14 +244,19 @@ public class EditorActivity extends AppCompatActivity {
         startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
     }
 
-    private void getProductInfoFromIntent() {
-        //TODO To implement this method
+    private void getProductInfoFromIntent(Product product) {
+        mName = product.getName();
+        mPrice = product.getPrice();
+        mQuantity = product.getQuantity();
+        mCurrentPhotoPath = product.getImageUri();
     }
 
+    /** Set EditTexts' and ImageView's values to the ones we got from intent */
     private void setViewsText() {
         nameEditText.setText(mName);
         quantityEditText.setText(mQuantity);
         priceEditText.setText(String.valueOf(mPrice));
+        productImageView.setImageURI(Uri.parse(mCurrentPhotoPath));
     }
 
     @Override
@@ -188,6 +270,7 @@ public class EditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_save:
                 savePet();
+                NavUtils.navigateUpFromSameTask(EditorActivity.this);
                 return true;
             case R.id.action_delete:
                 deletePet();
@@ -197,13 +280,15 @@ public class EditorActivity extends AppCompatActivity {
         }
     }
 
+    /** Get values from the UI and assign the to mVariables */
     private void savePet() {
         nameEditText = findViewById(R.id.nameEditText);
         quantityEditText = findViewById(R.id.quantityEditText);
         priceEditText = findViewById(R.id.priceEditText);
+        productImageView = findViewById(R.id.imageViewEditor);
 
         mName = nameEditText.getText().toString();
-        mQuantity = Integer.parseInt(nameEditText.getText().toString());
+        mQuantity = Integer.parseInt(quantityEditText.getText().toString());
         mPrice = Double.parseDouble(priceEditText.getText().toString());
 
         SaveProductAsyncTask task = new SaveProductAsyncTask();
@@ -220,6 +305,11 @@ public class EditorActivity extends AppCompatActivity {
         protected Void doInBackground(Void... voids) {
             if (intent == null) {
                 Log.i(LOG_TAG, "Creating a new product");
+                Product product = new Product(mName, mQuantity, mPrice, mCurrentPhotoPath);
+                productDao.addProduct(product);
+
+            } else {
+                productDao.updateProduct(mName, mQuantity, mPrice, mCurrentPhotoPath, mId);
             }
             return null;
         }
